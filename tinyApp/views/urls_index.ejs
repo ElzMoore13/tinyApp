@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+  <title>TinyApp</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+<body>
+  <div class='container'>
+    <table class = 'table'>
+      <thead>
+        <tr>
+          <th>- Shotened URL -</th>
+          <th>- Original URL -</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% for(let url in urls){  %>
+        <tr>
+          <td><%- url %></td>
+          <td><%- urls[url] %></td>
+        </tr>
+        <% } %>
+      </tbody>
+    </table>
+
+
+  </div>
+
+</body>
+</html>
