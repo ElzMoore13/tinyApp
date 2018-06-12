@@ -18,6 +18,12 @@ app.get('/urls', (req, res) => {
   res.render('urls_index.ejs', templateVars)
 })
 
+app.get('/urls/:id', (req, res) => {
+  const shortUrlKey = req.params.id
+  let templateVars = { shortURL: shortUrlKey, longURL: urlDatabase[shortUrlKey] };
+  res.render('urls_show.ejs', templateVars)
+})
+
 app.get('/urls.json', (req, res) => {
   res.json(urlDatabase);
 })
@@ -29,3 +35,8 @@ app.get('/hello', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listenign on port ${PORT}!`);
 });
+
+
+// var uid = function() {
+//   return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+// }
