@@ -46,13 +46,21 @@ app.get('/hello', (req, res) => {
   res.end("<html><body>Hello <b>World</b></body></html>\n");
 });
 
+app.get("/u/:shortURL", (req, res) => {
+  //let longURL =
+  res.redirect(longURL)
+})
+
 
 
 //POST method routes
 
 app.post("/urls", (req, res) => {
   console.log(req.body);
-  res.send('OK');
+  let newShortURL = generateRandomString();
+  urlDatabase[newShortURL] = req.body['longURL'];
+  res.redirect(`urls/${newShortURL}`);
+
 })
 
 app.listen(PORT, () => {
