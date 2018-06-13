@@ -70,7 +70,6 @@ app.get("/u/:shortURL", (req, res) => {
 //POST method routes
 
 app.post("/urls", (req, res) => {
-  console.log(req.body);
   let newShortURL = generateRandomString();
   urlDatabase[newShortURL] = req.body['longURL'];
   res.redirect(`urls/${newShortURL}`);
@@ -92,6 +91,11 @@ app.post("/urls/:id", (req, res) => {
 
 app.post("/login", (req, res) => {
   res.cookie('username', req.body['username']);
+  res.redirect('/urls');
+})
+
+app.post("/logout", (req, res) => {
+  res.clearCookie('username');
   res.redirect('/urls');
 })
 
