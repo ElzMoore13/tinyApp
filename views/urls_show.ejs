@@ -5,42 +5,11 @@
 </head>
 <body>
   <div class='container'>
-    <table class = 'table'>
-      <thead>
-        <th>Requested URL</th>
-        <tr>
-          <th>- Shortened URL -</th>
-          <th>- Original URL -</th>
-        </tr>
-      </thead>
-
-<!--
-<form action="/urls" method="POST" style="margin:150px;">
-      <label for="longURL">Enter a URL:</label>
-      <input id="longURL" type="text" name="longURL" placeholder='http://', style='width: 300px'>
-      <input type="submit" value="submit">
-    </form>
-  -->
-
-      <tbody>
-        <tr>
-          <td><%- shortURL %></td>
-          <td><%- longURL %></td>
-          <td>
-            <form method="POST" action='/urls/<%- shortURL %>'>
-              <input type="text" name="updatedLongURL" placeholder="New Name", style='width: 120px'>
-
-          </td>
-          <td>
-
-              <input type="submit" value="Update">
-            </form>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-
-
+    <h1><%-shortURL%></h1>
+      <form method="POST" action='/urls/<%- shortURL %>'>
+        <input type="text" name="updatedLongURL" placeholder="<%-longURL%>", style='width: 300px'>
+        <input type="submit" value="Update">
+      </form>
   </div>
 
 </body>
