@@ -2,7 +2,11 @@
 
 <title>TinyApp</title>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<% if (username === undefined)  {%>
 <form id="login" method="POST" action="/login">
   <input type="text" name="username" placeholder="Username">
   <input type="submit" name="login">
 </form>
+<% } else { %>
+  <input type="text" name="username" placeholder=<%- username %>>
+<% } %>
