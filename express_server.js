@@ -53,6 +53,7 @@ app.get("/u/:shortURL", (req, res) => {
 
 
 
+
 //POST method routes
 
 app.post("/urls", (req, res) => {
@@ -62,6 +63,15 @@ app.post("/urls", (req, res) => {
   res.redirect(`urls/${newShortURL}`);
 
 })
+
+app.post("/urls/:id/delete", (req, res) => {
+  let siteID = req.params.id;
+  delete urlDatabase[siteID];
+  res.redirect('/urls');
+})
+
+
+
 
 app.listen(PORT, () => {
   console.log(`Example app listenign on port ${PORT}!`);

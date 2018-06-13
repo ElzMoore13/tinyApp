@@ -8,7 +8,7 @@
     <table class = 'table'>
       <thead>
         <tr>
-          <th>- Shotened URL -</th>
+          <th>- Shortened URL -</th>
           <th>- Original URL -</th>
         </tr>
       </thead>
@@ -17,6 +17,11 @@
         <tr>
           <td><%- url %></td>
           <td><%- urls[url] %></td>
+          <td>
+            <form method="POST" action='/urls/<%- url %>/delete'>
+              <input type="submit" value="Delete">
+            </form>
+          </td>
         </tr>
         <% } %>
       </tbody>
