@@ -70,6 +70,13 @@ app.post("/urls/:id/delete", (req, res) => {
   res.redirect('/urls');
 })
 
+app.post("/urls/:id", (req, res) => {
+  let updatedLongURL = req.body['updatedLongURL'];
+  let shortURL = req.params.id;
+  urlDatabase[shortURL] = updatedLongURL;
+  res.redirect('/urls');
+})
+
 
 
 
