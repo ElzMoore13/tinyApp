@@ -74,7 +74,7 @@ app.post("/urls/:id", (req, res) => {
   let updatedLongURL = req.body['updatedLongURL'];
   let shortURL = req.params.id;
   urlDatabase[shortURL] = updatedLongURL;
-  res.redirect('/urls');
+  res.redirect(`/urls/${shortURL}`);
 })
 
 
