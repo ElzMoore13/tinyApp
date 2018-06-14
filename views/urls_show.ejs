@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang='en'>
-<header>
+<head>
   <%include ./partials/_header %>
-</header>
+</head>
 <body>
-  <div class='container'>
-    <h1><%-shortURL%></h1>
+  <div class='userForm urlEdit'>
+    <h1 id='shortUrlTitle'><%-shortURL%></h1>
       <form method="POST" action='/urls/<%- shortURL %>'>
-        <input type="text" name="updatedLongURL" placeholder="<%-longURL%>", style='width: 300px'>
+        <input id='updateText' type="text" name="updatedLongURL" placeholder="<%-longURL%>", style='width: 300px'>
         <input type="submit" value="Update">
       </form>
   </div>

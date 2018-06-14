@@ -84,13 +84,22 @@ app.post("/urls/:id/delete", (req, res) => {
 
 app.post("/urls/:id", (req, res) => {
   let updatedLongURL = req.body['updatedLongURL'];
+  console.log(updatedLongURL)
   let shortURL = req.params.id;
-  urlDatabase[shortURL] = updatedLongURL;
-  res.redirect(`/urls/${shortURL}`);
+  if(updatedLongURL){
+    urlDatabase[shortURL] = updatedLongURL;
+  }
+  res.redirect('/urls')
+  //res.redirect(`/urls/${shortURL}`);
 })
 
 app.post("/login", (req, res) => {
-  res.cookie('username', req.body['username']);
+  let requestedUsername = req.body['username']
+  console.log(requestedUsername)
+  if(requestedUsername){
+    res.cookie('username', req.body['username']);
+
+  }
   res.redirect('/urls');
 })
 
