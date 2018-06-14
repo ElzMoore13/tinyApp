@@ -1,0 +1,84 @@
+body {
+  background-color: #0e54a0
+}
+
+.table {
+
+
+}
+
+.container {
+  margin-top: 50px;
+}
+
+head {
+
+}
+
+.table-striped{
+  background-color: #c7d6e6;
+
+}
+
+.table{
+  border-radius:25px;
+}
+
+#login, #logout {
+  background-color: #63a8ee;
+  align-items: center;
+  border-radius:25px;
+  padding: 10px;
+  margin: 10px;
+  margin-left: 180px;
+}
+
+/*
+#userForm{
+  background-color: #c3d1df;
+  padding: 20px;
+  padding-top: 40px;
+  padding-bottom: 40px;
+  border-radius: 35px;
+  margin-top: 50px;
+}
+*/
+
+
+.urlEdit{
+  margin-left: 100px;
+  background-color: #c3d1df;
+  margin-top: 100px;
+  border-radius: 35px;
+}
+
+.btn {
+  margin: 5px;
+}
+
+#shortUrlTitle{
+  text-align: right;
+  margin-right: 40px;
+  font-size: 80px;
+}
+
+#topLeftPic{
+  height: 10%;
+  width: 10%;
+  position: relative;
+  top: 80px;
+  left: 55px;
+}
+
+#updateText{
+  position: relative;
+  top: 0;
+  padding: 0px;
+}
+
+
+
+
+
+
+

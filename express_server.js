@@ -14,11 +14,50 @@ const urlDatabase = {
   "9sm5xk": "http://www.google.com"
 };
 
-//function to generate unique shortURLS
-function generateRandomString(){
+const users ={
+  "322w55ekh7g": {
+    id: "322w55ekh7g",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur"
+  },
+ "do1r53g7xat": {
+    id: "do1r53g7xat",
+    email: "user2@example.com",
+    password: "dishwasher-funk"
+  }
+}
+
+//functions
+  // to generate unique shortURLS
+function generateShortUrl(){
   const uniqueKey = Math.random().toString(36).replace('0.','').split('').slice(0,6).join('');
   return uniqueKey;
 }
+
+  //to generate unique user IDs
+function generateRandomUserId(){
+  const uniqueKey = Math.random().toString(36).replace('0.','').split('').slice(0,12).join('');
+  return uniqueKey;
+}
+
+  //check if email is already registered
+const isNotUniqueEmail = function(newEmail){
+  let keys = Object.keys(users);
+  var flag = false
+  keys.forEach( function(key) {
+    if(users[key]['email'] === newEmail){
+      flag = true;
+    }
+  })
+  return flag;
+
+}
+
+const make404 = function(res){
+  res.status(400).render('404.ejs')
+}
+
+
 
 //GET method routes
 
@@ -29,6 +68,7 @@ app.get("/", (req, res) => {
 app.get('/urls', (req, res) => {
   let templateVars = {
     username: req.cookies["username"],
+    userId: req.cookies['userId'],
     urls: urlDatabase
   };
   console.log(templateVars['username'])
@@ -38,6 +78,7 @@ app.get('/urls', (req, res) => {
 app.get('/urls/new', (req, res) => {
   let templateVars = {
     username: req.cookies["username"],
+    userId: req.cookies['userId'],
   }
   res.render('urls_new.ejs', templateVars);
 })
@@ -46,6 +87,7 @@ app.get('/urls/:id', (req, res) => {
   const shortUrlKey = req.params.id
   let templateVars = {
     username: req.cookies["username"],
+    userId: req.cookies['userId'],
     shortURL: shortUrlKey,
     longURL: urlDatabase[shortUrlKey]
   };
@@ -65,13 +107,20 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL)
 })
 
+app.get('/register', (req, res) => {
+  let templateVars = {
+    username: req.cookies["username"],
+  }
+  res.render('register.ejs', templateVars);
+})
+
 
 
 
 //POST method routes
 
 app.post("/urls", (req, res) => {
-  let newShortURL = generateRandomString();
+  let newShortURL = generateShortUrl();
   urlDatabase[newShortURL] = req.body['longURL'];
   res.redirect(`urls/${newShortURL}`);
 
@@ -97,14 +146,36 @@ app.post("/login", (req, res) => {
   console.log(requestedUsername)
   if(requestedUsername){
     res.cookie('username', req.body['username']);
-
   }
   res.redirect('/urls');
 })
 
 app.post("/logout", (req, res) => {
   res.clearCookie('username');
+  res.clearCookie('userId');
   res.redirect('/urls');
+})
+
+app.post('/register', (req,res) => {
+  let email = req.body['email'];
+  let password = req.body['password'];
+  let checkIfUnique = isNotUniqueEmail(email)
+  if(!(email && password)){
+    make404(res, "need both a username and password!");
+  } else if (checkIfUnique) {
+    make404(res, "Emaiil already registered!");
+  } else {
+    let newID = generateRandomUserId();
+    users[newID] = {
+      'id': newID,
+      'email': email,
+      'password': password
+    }
+    console.log(users);
+    res.cookie('userId', newID);
+    res.redirect('/urls');
+  }
+
 })
 
 
