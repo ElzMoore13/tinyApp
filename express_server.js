@@ -180,7 +180,7 @@ app.post("/login", (req, res) => {
 
 app.post("/logout", (req, res) => {
   res.clearCookie('user');
-  res.redirect('/urls');
+  res.redirect('/login');
 })
 
 app.post('/register', (req,res) => {

@@ -6,8 +6,8 @@
 
   <% if (user === undefined) {%>
   <form id="login" method="POST" action="/login">
-    <input type="text" name="email" placeholder="thisIsMyEmail@helloWorld.com">
-    <input type="text" name="password" placeholder="•••••••••">
+    <input type="email" name="email" placeholder="thisIsMyEmail@helloWorld.com">
+    <input type="password" name="password" placeholder="•••••••••">
     <input type="submit" name="login">
   </form>
 <% } else { %>

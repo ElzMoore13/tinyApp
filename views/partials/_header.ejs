@@ -5,6 +5,7 @@
 
 <% if (user === undefined) {%>
   <a href='/login'>Wanna Login?</a>
+  <a href='/register'>Wanna Register?</a>
 <% } else { %>
   <form id='logout' method="POST" action='/logout'>
     <label for="logout"><%- user['email'] %></label>
