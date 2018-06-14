@@ -14,11 +14,68 @@ const urlDatabase = {
   "9sm5xk": "http://www.google.com"
 };
 
-//function to generate unique shortURLS
-function generateRandomString(){
+const users ={
+  "322w55ekh7g": {
+    id: "322w55ekh7g",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur"
+  },
+ "do1r53g7xat": {
+    id: "do1r53g7xat",
+    email: "user2@example.com",
+    password: "dishwasher-funk"
+  }
+}
+
+//functions
+
+  // to generate unique shortURLS
+function generateShortUrl(){
   const uniqueKey = Math.random().toString(36).replace('0.','').split('').slice(0,6).join('');
   return uniqueKey;
 }
+
+  //to generate unique user IDs
+function generateRandomUserId(){
+  const uniqueKey = Math.random().toString(36).replace('0.','').split('').slice(0,12).join('');
+  return uniqueKey;
+}
+
+  //check if email is already registered
+const isNotUniqueEmail = function(newEmail){
+  let keys = Object.keys(users);
+  var flag = false
+  keys.forEach( function(key) {
+    if(users[key]['email'] === newEmail){
+      flag = true;
+    }
+  })
+  return flag;
+}
+
+  //render error page
+const make404 = function(res){
+  res.status(400).render('404.ejs')
+}
+
+  //find user associated with email & password
+const findUser = function(email, password) {
+  let keys = Object.keys(users);
+  console.log(keys);
+  let userId = keys.filter(key => users[key]['email'] === email).toString();
+  //check if password matches password stored for that user
+  if(!userId){
+    return null;
+  } else if(users[userId]['password'] === password){
+    return users[userId];
+  }
+  else {
+    return null;
+  }
+}
+
+
+
 
 //GET method routes
 
@@ -28,7 +85,7 @@ app.get("/", (req, res) => {
 
 app.get('/urls', (req, res) => {
   let templateVars = {
-    username: req.cookies["username"],
+    user: req.cookies["user"],
     urls: urlDatabase
   };
   console.log(templateVars['username'])
@@ -37,7 +94,7 @@ app.get('/urls', (req, res) => {
 
 app.get('/urls/new', (req, res) => {
   let templateVars = {
-    username: req.cookies["username"],
+    user: req.cookies["user"],
   }
   res.render('urls_new.ejs', templateVars);
 })
@@ -45,7 +102,7 @@ app.get('/urls/new', (req, res) => {
 app.get('/urls/:id', (req, res) => {
   const shortUrlKey = req.params.id
   let templateVars = {
-    username: req.cookies["username"],
+    user: req.cookies["user"],
     shortURL: shortUrlKey,
     longURL: urlDatabase[shortUrlKey]
   };
@@ -65,13 +122,28 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL)
 })
 
+app.get('/register', (req, res) => {
+  let templateVars = {
+    user: req.cookies["user"],
+  }
+  res.render('register.ejs', templateVars);
+})
+
+app.get('/login', (req, res) => {
+  let templateVars = {
+    user: req.cookies['user'],
+  }
+  res.render('login.ejs', templateVars);
+})
+
+
 
 
 
 //POST method routes
 
 app.post("/urls", (req, res) => {
-  let newShortURL = generateRandomString();
+  let newShortURL = generateShortUrl();
   urlDatabase[newShortURL] = req.body['longURL'];
   res.redirect(`urls/${newShortURL}`);
 
@@ -93,18 +165,44 @@ app.post("/urls/:id", (req, res) => {
 })
 
 app.post("/login", (req, res) => {
-  let requestedUsername = req.body['username']
-  console.log(requestedUsername)
-  if(requestedUsername){
-    res.cookie('username', req.body['username']);
-
+  let attemptedEmail = req.body['email'];
+  let attemptedPassword = req.body['password'];
+  if(attemptedEmail && attemptedPassword){
+    let foundUser = findUser(attemptedEmail, attemptedPassword);
+    if(foundUser){
+      res.cookie('user', foundUser);
+      res.redirect('/urls');
+    } else {
+      make404(res); //email and/or password were not found :(
+    }
   }
-  res.redirect('/urls');
 })
 
 app.post("/logout", (req, res) => {
-  res.clearCookie('username');
-  res.redirect('/urls');
+  res.clearCookie('user');
+  res.redirect('/login');
+})
+
+app.post('/register', (req,res) => {
+  let email = req.body['email'];
+  let password = req.body['password'];
+  let checkIfUnique = isNotUniqueEmail(email)
+  if(!(email && password)){
+    make404(res);// , "need both a username and password!");
+  } else if (checkIfUnique) {
+    make404(res); //, "Email already registered!");
+  } else {
+    let newID = generateRandomUserId();
+    users[newID] = {
+      'id': newID,
+      'email': email,
+      'password': password
+    }
+    console.log(users);
+    res.cookie('user', users[newID]);
+    res.redirect('/urls');
+  }
+
 })
 
 
