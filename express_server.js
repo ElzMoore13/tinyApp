@@ -165,7 +165,7 @@ app.post("/urls", (req, res) => {
 app.post("/urls/:id/delete", (req, res) => {
   let shortURL = req.params.id;
 
-  if(req.cookies['id'] === urlDatabase[shortURL][userID]){
+  if(req.cookies['user']['id'] === urlDatabase[shortURL]['userID']){
 
     delete urlDatabase[shortURL];
   }
