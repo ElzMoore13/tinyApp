@@ -80,6 +80,20 @@ const findUser = function(email, password) {
   }
 }
 
+const getUsersUrls = function(userID) {
+  let availableUrls = {};
+  let urlKeys = Object.keys(urlDatabase);
+  for(let key of urlKeys){
+    if (urlDatabase[key]['userID'] === userID){
+      availableUrls[key] = {
+        'longURL': urlDatabase[key]['longURL'],
+        'userID': urlDatabase[key]['userID']
+      }
+    }
+  }
+  return availableUrls;
+}
+
 
 
 
@@ -90,12 +104,23 @@ app.get("/", (req, res) => {
 });
 
 app.get('/urls', (req, res) => {
-  let templateVars = {
-    user: req.cookies["user"],
-    urls: urlDatabase
-  };
-  console.log(templateVars['username'])
-  res.render('urls_index.ejs', templateVars)
+  //require login
+  if(req.cookies['user']) {
+
+    let currUserID = req.cookies['user']['id'];
+    let currUrls = getUsersUrls(currUserID);
+
+    //get all users available urls --> send them to the rend/template!
+
+    let templateVars = {
+      user: req.cookies["user"],
+      urls: currUrls
+    };
+    console.log(templateVars['username'])
+    res.render('urls_index.ejs', templateVars)
+  } else{
+    res.redirect('/login');
+  }
 })
 
 app.get('/urls/new', (req, res) => {
