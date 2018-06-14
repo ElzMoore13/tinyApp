@@ -7,6 +7,7 @@ const cookieParser = require('cookie-parser');
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
+app.use(express.static("views"));
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -30,7 +31,6 @@ app.get('/urls', (req, res) => {
     username: req.cookies["username"],
     urls: urlDatabase
   };
-  console.log(templateVars['username'])
   res.render('urls_index.ejs', templateVars)
 })
 

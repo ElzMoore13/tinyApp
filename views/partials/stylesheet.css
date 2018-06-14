@@ -1,1 +1,38 @@
-.container =
+body {
+  background-color: #0e54a0
+}
+
+.table {
+
+
+}
+
+head {
+
+}
+
+.table-striped{
+  background-color: #c7d6e6;
+
+}
+
+.table{
+  border-radius:25px;
+}
+
+#login, #logout {
+  background-color: #63a8ee;
+  align-items: center;
+  border-radius:25px;
+  padding:10px;
+  margin: 10px;
+}
+
+.userForm{
+  margin-top:32px;
+  align-self: center;
+}
+
+.form-inline{
+  align-items: center;
+}
