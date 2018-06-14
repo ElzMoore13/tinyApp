@@ -93,10 +93,14 @@ app.get('/urls', (req, res) => {
 })
 
 app.get('/urls/new', (req, res) => {
-  let templateVars = {
-    user: req.cookies["user"],
+  if (req.cookies['user']) {
+    let templateVars = {
+      user: req.cookies["user"],
+    }
+    res.render('urls_new.ejs', templateVars);
+  } else {
+    res.redirect('/login');
   }
-  res.render('urls_new.ejs', templateVars);
 })
 
 app.get('/urls/:id', (req, res) => {
