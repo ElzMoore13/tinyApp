@@ -10,8 +10,14 @@ app.use(cookieParser());
 app.use(express.static("views"));
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xk": "http://www.google.com"
+  "b2xVn2": {
+    'longURL': "http://www.lighthouselabs.ca",
+    'userID': '322w55ekh7g'
+  },
+  "9sm5xk": {
+    'longURL': "http://www.google.com",
+    'userID': 'do1r53g7xat'
+  }
 };
 
 const users ={
@@ -108,7 +114,7 @@ app.get('/urls/:id', (req, res) => {
   let templateVars = {
     user: req.cookies["user"],
     shortURL: shortUrlKey,
-    longURL: urlDatabase[shortUrlKey]
+    longURL: urlDatabase[shortUrlKey]['longURL']
   };
   res.render('urls_show.ejs', templateVars)
 })
@@ -148,24 +154,39 @@ app.get('/login', (req, res) => {
 
 app.post("/urls", (req, res) => {
   let newShortURL = generateShortUrl();
-  urlDatabase[newShortURL] = req.body['longURL'];
+  urlDatabase[newShortURL] = {
+    'longURL': req.body['longURL'],
+    'userID': req.cookies['id']
+  }
   res.redirect(`urls/${newShortURL}`);
 
 })
 
 app.post("/urls/:id/delete", (req, res) => {
-  let siteID = req.params.id;
-  delete urlDatabase[siteID];
+  let shortURL = req.params.id;
+
+  if(req.cookies['id'] === urlDatabase[shortURL][userID]){
+
+    delete urlDatabase[shortURL];
+  }
   res.redirect('/urls');
 })
 
+
 app.post("/urls/:id", (req, res) => {
-  let updatedLongURL = req.body['updatedLongURL'];
+
+  //require correct login.... match to userID
   let shortURL = req.params.id;
-  if(updatedLongURL){
-    urlDatabase[shortURL] = updatedLongURL;
+
+  if(req.cookies['user']['id'] === urlDatabase[shortURL]['userID']){
+
+    let updatedLongURL = req.body['updatedLongURL'];
+
+    if(updatedLongURL){
+      urlDatabase[shortURL]['longURL'] = updatedLongURL;
+    }
   }
-  res.redirect(`/urls/${shortURL}`);
+  res.redirect('/urls');
 })
 
 app.post("/login", (req, res) => {
