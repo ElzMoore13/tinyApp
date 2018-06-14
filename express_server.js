@@ -135,13 +135,32 @@ app.get('/urls/new', (req, res) => {
 })
 
 app.get('/urls/:id', (req, res) => {
-  const shortUrlKey = req.params.id
-  let templateVars = {
-    user: req.cookies["user"],
-    shortURL: shortUrlKey,
-    longURL: urlDatabase[shortUrlKey]['longURL']
-  };
-  res.render('urls_show.ejs', templateVars)
+  //require login
+  if(req.cookies['user']){
+
+    //check if id belongs to them
+    const shortUrlKey = req.params.id
+    if(Object.keys(urlDatabase).indexOf(shortUrlKey) < 0){
+      res.redirect('/urls');
+    } else if(urlDatabase[shortUrlKey]['userID']){
+
+      let templateVars = {
+        user: req.cookies["user"],
+        shortURL: shortUrlKey,
+        longURL: urlDatabase[shortUrlKey]['longURL']
+      };
+      res.render('urls_show.ejs', templateVars)
+    } else {
+
+      //redirect to their main url page if the id does not belong to them
+      res.redirect('/urls');
+    }
+
+  } else {
+
+    //redirect if not logged in
+    res.redirect('/login');
+  }
 })
 
 app.get('/urls.json', (req, res) => {
@@ -153,7 +172,11 @@ app.get('/hello', (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL];
+  //SHOULD NOT REQUIRE LOGIN, can be viewed by anybody
+
+  let longURL = urlDatabase[req.params.shortURL]['longURL'];
+
+  //redirect to the long url/original site
   res.redirect(longURL)
 })
 
