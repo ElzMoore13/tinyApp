@@ -3,6 +3,8 @@ const app = express();
 const PORT = 8080;
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
+const bcrypt = require('bcryptjs');
+
 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
@@ -67,12 +69,11 @@ const make404 = function(res){
   //find user associated with email & password
 const findUser = function(email, password) {
   let keys = Object.keys(users);
-  console.log(keys);
   let userId = keys.filter(key => users[key]['email'] === email).toString();
   //check if password matches password stored for that user
   if(!userId){
     return null;
-  } else if(users[userId]['password'] === password){
+  } else if(bcrypt.compareSync(password, users[userId]['password'])){
     return users[userId];
   }
   else {
@@ -116,7 +117,6 @@ app.get('/urls', (req, res) => {
       user: req.cookies["user"],
       urls: currUrls
     };
-    console.log(templateVars['username'])
     res.render('urls_index.ejs', templateVars)
   } else{
     res.redirect('/login');
@@ -258,7 +258,8 @@ app.post("/logout", (req, res) => {
 
 app.post('/register', (req,res) => {
   let email = req.body['email'];
-  let password = req.body['password'];
+  let password = bcrypt.hashSync(req.body['password'], 10);
+
   let checkIfUnique = isNotUniqueEmail(email)
   if(!(email && password)){
     make404(res);// , "need both a username and password!");
@@ -271,7 +272,6 @@ app.post('/register', (req,res) => {
       'email': email,
       'password': password
     }
-    console.log(users);
     res.cookie('user', users[newID]);
     res.redirect('/urls');
   }
