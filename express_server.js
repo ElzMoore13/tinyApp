@@ -7,6 +7,7 @@ const cookieParser = require('cookie-parser');
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
+app.use(express.static("views"));
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -85,12 +86,19 @@ app.post("/urls/:id/delete", (req, res) => {
 app.post("/urls/:id", (req, res) => {
   let updatedLongURL = req.body['updatedLongURL'];
   let shortURL = req.params.id;
-  urlDatabase[shortURL] = updatedLongURL;
+  if(updatedLongURL){
+    urlDatabase[shortURL] = updatedLongURL;
+  }
   res.redirect(`/urls/${shortURL}`);
 })
 
 app.post("/login", (req, res) => {
-  res.cookie('username', req.body['username']);
+  let requestedUsername = req.body['username']
+  console.log(requestedUsername)
+  if(requestedUsername){
+    res.cookie('username', req.body['username']);
+
+  }
   res.redirect('/urls');
 })
 
