@@ -28,6 +28,7 @@ const users ={
 }
 
 //functions
+
   // to generate unique shortURLS
 function generateShortUrl(){
   const uniqueKey = Math.random().toString(36).replace('0.','').split('').slice(0,6).join('');
@@ -50,12 +51,29 @@ const isNotUniqueEmail = function(newEmail){
     }
   })
   return flag;
-
 }
 
+  //render error page
 const make404 = function(res){
   res.status(400).render('404.ejs')
 }
+
+  //find user associated with email & password
+const findUser = function(email, password) {
+  let keys = Object.keys(users);
+  console.log(keys);
+  let userId = keys.filter(key => users[key]['email'] === email).toString();
+  //check if password matches password stored for that user
+  if(!userId){
+    return null;
+  } else if(users[userId]['password'] === password){
+    return users[userId];
+  }
+  else {
+    return null;
+  }
+}
+
 
 
 
@@ -121,6 +139,7 @@ app.get('/login', (req, res) => {
 
 
 
+
 //POST method routes
 
 app.post("/urls", (req, res) => {
@@ -146,12 +165,17 @@ app.post("/urls/:id", (req, res) => {
 })
 
 app.post("/login", (req, res) => {
-  let requestedUsername = req.body['username']
-  console.log(requestedUsername)
-  if(requestedUsername){
-    res.cookie('username', req.body['username']);
+  let attemptedEmail = req.body['email'];
+  let attemptedPassword = req.body['password'];
+  if(attemptedEmail && attemptedPassword){
+    let foundUser = findUser(attemptedEmail, attemptedPassword);
+    if(foundUser){
+      res.cookie('user', foundUser);
+      res.redirect('/urls');
+    } else {
+      make404(res); //email and/or password were not found :(
+    }
   }
-  res.redirect('/urls');
 })
 
 app.post("/logout", (req, res) => {
