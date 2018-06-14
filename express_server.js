@@ -111,6 +111,13 @@ app.get('/register', (req, res) => {
   res.render('register.ejs', templateVars);
 })
 
+app.get('/login', (req, res) => {
+  let templateVars = {
+    user: req.cookies['user'],
+  }
+  res.render('login.ejs', templateVars);
+})
+
 
 
 
@@ -157,9 +164,9 @@ app.post('/register', (req,res) => {
   let password = req.body['password'];
   let checkIfUnique = isNotUniqueEmail(email)
   if(!(email && password)){
-    make404(res, "need both a username and password!");
+    make404(res);// , "need both a username and password!");
   } else if (checkIfUnique) {
-    make404(res, "Emaiil already registered!");
+    make404(res); //, "Email already registered!");
   } else {
     let newID = generateRandomUserId();
     users[newID] = {
