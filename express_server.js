@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcryptjs');
+const methodOverride = require('method-override');
 
 
 app.set('view engine', 'ejs');
@@ -17,6 +18,7 @@ app.use(cookieSession({
 
 }))
 app.use(express.static("views"));
+app.use(methodOverride('_method'));
 
 
 
@@ -121,6 +123,7 @@ const isLoggedIn = function(req){
 const matchedIds = function(req, shortURL){
   return (req.session['user']['id'] === urlDatabase[shortURL]['userID']);
 }
+
 
 
 
@@ -253,46 +256,12 @@ app.get('/login', (req, res) => {
 
 
 
-//POST method routes
-
-  //posted after creating new url to be shortened
-app.post("/urls", (req, res) => {
-
-  //get new unique short url key
-  let newShortURL = generateShortUrl();
-
-  //add urls to database with userID tag
-  urlDatabase[newShortURL] = {
-    'longURL': req.body['longURL'],
-    'userID': req.session['user']['id']
-  }
-
-  //redirect to that short urls main page
-  res.redirect(`urls/${newShortURL}`);
-
-})
 
 
-  //posted after requesting to delete a specific url from database
-app.post("/urls/:id/delete", (req, res) => {
+  //PUT methods
 
-  //get unique short url key from params
-  let shortURL = req.params.id;
-
-  //check if the url belongs to the current user - do their IDs match?
-  if(matchedIds(req, shortURL)){
-
-    //if url belongs to current user, remove from the database
-    delete urlDatabase[shortURL];
-  }
-
-  //redirect to urls listing page
-  res.redirect('/urls');
-})
-
-
-  //posted after user requests to update the long url associated with a given short url
-app.post("/urls/:id", (req, res) => {
+//posted after user requests to update the long url associated with a given short url
+app.put("/urls/:id", (req, res) => {
 
   let shortURL = req.params.id;
 
@@ -311,6 +280,32 @@ app.post("/urls/:id", (req, res) => {
 
   //redirect to urls listing page
   res.redirect('/urls');
+})
+
+
+
+
+
+
+
+
+//POST method routes
+
+  //posted after creating new url to be shortened
+app.post("/urls", (req, res) => {
+
+  //get new unique short url key
+  let newShortURL = generateShortUrl();
+
+  //add urls to database with userID tag
+  urlDatabase[newShortURL] = {
+    'longURL': req.body['longURL'],
+    'userID': req.session['user']['id']
+  }
+
+  //redirect to that short urls main page
+  res.redirect(`urls/${newShortURL}`);
+
 })
 
 
@@ -405,6 +400,30 @@ app.post('/register', (req,res) => {
     }
   }
 
+})
+
+
+
+
+
+
+  //DELETE method routes
+
+//posted after requesting to delete a specific url from database
+app.delete("/urls/:id/delete", (req, res) => {
+
+  //get unique short url key from params
+  let shortURL = req.params.id;
+
+  //check if the url belongs to the current user - do their IDs match?
+  if(matchedIds(req, shortURL)){
+
+    //if url belongs to current user, remove from the database
+    delete urlDatabase[shortURL];
+  }
+
+  //redirect to urls listing page
+  res.redirect('/urls');
 })
 
 
