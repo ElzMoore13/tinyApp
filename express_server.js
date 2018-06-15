@@ -3,11 +3,24 @@ const app = express();
 const PORT = 8080;
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
+const cookieSession = require('cookie-session');
+const bcrypt = require('bcryptjs');
+
 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
+app.use(cookieSession({
+
+  key: 'user',
+  secret: 'SECret'
+
+}))
 app.use(express.static("views"));
+
+
+
+//set initial user and url databases to test
 
 const urlDatabase = {
   "b2xVn2": {
@@ -33,16 +46,19 @@ const users ={
   }
 }
 
+
+
+
 //functions
 
   // to generate unique shortURLS
-function generateShortUrl(){
+const generateShortUrl = function(){
   const uniqueKey = Math.random().toString(36).replace('0.','').split('').slice(0,6).join('');
   return uniqueKey;
 }
 
   //to generate unique user IDs
-function generateRandomUserId(){
+const generateRandomUserId = function(){
   const uniqueKey = Math.random().toString(36).replace('0.','').split('').slice(0,12).join('');
   return uniqueKey;
 }
@@ -67,12 +83,11 @@ const make404 = function(res){
   //find user associated with email & password
 const findUser = function(email, password) {
   let keys = Object.keys(users);
-  console.log(keys);
   let userId = keys.filter(key => users[key]['email'] === email).toString();
   //check if password matches password stored for that user
   if(!userId){
     return null;
-  } else if(users[userId]['password'] === password){
+  } else if(bcrypt.compareSync(password, users[userId]['password'])){
     return users[userId];
   }
   else {
@@ -80,6 +95,7 @@ const findUser = function(email, password) {
   }
 }
 
+  //get all the urls associated with a given user
 const getUsersUrls = function(userID) {
   let availableUrls = {};
   let urlKeys = Object.keys(urlDatabase);
@@ -97,62 +113,86 @@ const getUsersUrls = function(userID) {
 
 
 
+
 //GET method routes
 
 app.get("/", (req, res) => {
-  res.end("Hello!");
+  res.redirect('/login');
 });
 
+  //list all urls associated with current user
 app.get('/urls', (req, res) => {
-  //require login
-  if(req.cookies['user']) {
 
-    let currUserID = req.cookies['user']['id'];
+  //require login
+  if (req.session.user) {
+
+    //if someone is logged in, find all of the urls with their id
+    let currUserID = req.session['user']['id'];
     let currUrls = getUsersUrls(currUserID);
 
-    //get all users available urls --> send them to the rend/template!
-
+    //get all users available urls --> send them to the render/template!
     let templateVars = {
-      user: req.cookies["user"],
+      user: req.session["user"],
       urls: currUrls
     };
-    console.log(templateVars['username'])
+
     res.render('urls_index.ejs', templateVars)
+
   } else{
+
+    //if no one is logged in, redirect to login page
     res.redirect('/login');
   }
 })
 
+  //add a new url (submit a url to be shrunk)
 app.get('/urls/new', (req, res) => {
-  if (req.cookies['user']) {
+
+  //require login
+  if (req.session.user) {
+
+
     let templateVars = {
-      user: req.cookies["user"],
+      user: req.session["user"],
     }
+
     res.render('urls_new.ejs', templateVars);
+
   } else {
+
+    //if no one is logged in, redirect to login page
     res.redirect('/login');
   }
 })
 
+  //look at a specific shruken url and it's long version
 app.get('/urls/:id', (req, res) => {
-  //require login
-  if(req.cookies['user']){
 
-    //check if id belongs to them
+  //require login
+  if (req.session.user) {
+
+    //check if id belongs to them - do they have access to this url?/do their IDs match?
     const shortUrlKey = req.params.id
+
     if(Object.keys(urlDatabase).indexOf(shortUrlKey) < 0){
+
+      //if specified shruken url doesn't exist, redirect to available urls page
       res.redirect('/urls');
+
     } else if(urlDatabase[shortUrlKey]['userID']){
 
+      //if IDs, render page/allow access
       let templateVars = {
-        user: req.cookies["user"],
+        user: req.session["user"],
         shortURL: shortUrlKey,
         longURL: urlDatabase[shortUrlKey]['longURL']
       };
+
       res.render('urls_show.ejs', templateVars)
+
     } else {
 
-      //redirect to their main url page if the id does not belong to them
+      //if IDs don't match, redirect to their available urls page
       res.redirect('/urls');
     }
 
@@ -163,36 +203,39 @@ app.get('/urls/:id', (req, res) => {
   }
 })
 
+  //look at database as json object - first/test page
 app.get('/urls.json', (req, res) => {
   res.json(urlDatabase);
 })
 
+  //test page
 app.get('/hello', (req, res) => {
   res.end("<html><body>Hello <b>World</b></body></html>\n");
 });
 
+  //redirect to the corresponding long url of specified shrunken url
 app.get("/u/:shortURL", (req, res) => {
-  //SHOULD NOT REQUIRE LOGIN, can be viewed by anybody
 
+  //SHOULD NOT REQUIRE LOGIN, can be viewed by anybody
   let longURL = urlDatabase[req.params.shortURL]['longURL'];
 
   //redirect to the long url/original site
   res.redirect(longURL)
 })
 
+  //displays registration form
 app.get('/register', (req, res) => {
-  let templateVars = {
-    user: req.cookies["user"],
-  }
-  res.render('register.ejs', templateVars);
+
+  res.render('register.ejs');
 })
 
+  //displays login form
 app.get('/login', (req, res) => {
-  let templateVars = {
-    user: req.cookies['user'],
-  }
-  res.render('login.ejs', templateVars);
+
+  res.render('login.ejs');
 })
+
+
 
 
 
@@ -200,79 +243,143 @@ app.get('/login', (req, res) => {
 
 //POST method routes
 
+  //posted after creating new url to be shortened
 app.post("/urls", (req, res) => {
+
+  //get new unique short url key
   let newShortURL = generateShortUrl();
+
+  //add urls to database with userID tag
   urlDatabase[newShortURL] = {
     'longURL': req.body['longURL'],
-    'userID': req.cookies['id']
+    'userID': req.session['user']['id']
   }
+
+  //redirect to that short urls main page
   res.redirect(`urls/${newShortURL}`);
 
 })
 
+
+  //posted after requesting to delete a specific url from database
 app.post("/urls/:id/delete", (req, res) => {
+
+  //get unique short url key from params
   let shortURL = req.params.id;
 
-  if(req.cookies['user']['id'] === urlDatabase[shortURL]['userID']){
+  //check if the url belongs to the current user - do their IDs match?
+  if(req.session['user']['id'] === urlDatabase[shortURL]['userID']){
 
+    //if url belongs to current user, remove from the database
     delete urlDatabase[shortURL];
   }
+
+  //redirect to urls listing page
   res.redirect('/urls');
 })
 
 
+  //posted after user requests to update the long url associated with a given short url
 app.post("/urls/:id", (req, res) => {
 
-  //require correct login.... match to userID
   let shortURL = req.params.id;
 
-  if(req.cookies['user']['id'] === urlDatabase[shortURL]['userID']){
+  //require correct login.... match to userID
+  if(req.session['user']['id'] === urlDatabase[shortURL]['userID']){
 
+    //idetify short url id, and the desired new paired long url
     let updatedLongURL = req.body['updatedLongURL'];
 
+    //if longUrl is present, update the database value
     if(updatedLongURL){
+
       urlDatabase[shortURL]['longURL'] = updatedLongURL;
     }
   }
+
+  //redirect to urls listing page
   res.redirect('/urls');
 })
 
+
+  //posted after login attempt
 app.post("/login", (req, res) => {
+
+  //get email and password for login attempt
   let attemptedEmail = req.body['email'];
   let attemptedPassword = req.body['password'];
+
+  //if both email and password are present, proceed to check if valid
   if(attemptedEmail && attemptedPassword){
+
+    //check if any user in the database matches given email and password
     let foundUser = findUser(attemptedEmail, attemptedPassword);
+
+    //if the user was located in the database
     if(foundUser){
-      res.cookie('user', foundUser);
+      //store data in cookies
+      req.session.user = foundUser;
+
+      //redirect to their urls listing page
       res.redirect('/urls');
+
     } else {
+
+      //if email and/or password had no match, render error page
       make404(res); //email and/or password were not found :(
     }
   }
 })
 
+
+  //posted after logout request
 app.post("/logout", (req, res) => {
-  res.clearCookie('user');
+
+  //clear session cookies
+  req.session = null;
+
+  //redirect to login page
   res.redirect('/login');
 })
 
+
+  //posted after registration attempt
 app.post('/register', (req,res) => {
+
+  //get requested email and password from registration request
   let email = req.body['email'];
-  let password = req.body['password'];
-  let checkIfUnique = isNotUniqueEmail(email)
+  let password = bcrypt.hashSync(req.body['password'], 10);
+
+  //check that both an email and a password were given
   if(!(email && password)){
+    //if not, render and error
     make404(res);// , "need both a username and password!");
-  } else if (checkIfUnique) {
+  }
+
+  //check if email has already been used (is it already stored in users?)
+  let checkIfUnique = isNotUniqueEmail(email)
+
+  if (checkIfUnique) {
+
+    //if not unique, render an error
     make404(res); //, "Email already registered!");
+
   } else {
+
+    //if both a unique email and a password are present, generate new random ID for user
     let newID = generateRandomUserId();
+
+    //store user information in user database
     users[newID] = {
       'id': newID,
       'email': email,
       'password': password
     }
-    console.log(users);
-    res.cookie('user', users[newID]);
+
+    //store user information in session cookies
+    req.session.user = users[newID]
+
+    //redirect to their urls listing page
     res.redirect('/urls');
   }
 
