@@ -112,6 +112,16 @@ const getUsersUrls = function(userID) {
   return availableUrls;
 }
 
+  //check if a user is logged in
+const isLoggedIn = function(req){
+  return req.session.user;
+}
+
+  //check if current userID matches ID of a given URL
+const matchedIds = function(req, shortURL){
+  return (req.session['user']['id'] === urlDatabase[shortURL]['userID']);
+}
+
 
 
 
@@ -126,7 +136,7 @@ app.get("/", (req, res) => {
 app.get('/urls', (req, res) => {
 
   //require login
-  if (req.session.user) {
+  if (isLoggedIn(req)) {
 
     //if someone is logged in, find all of the urls with their id
     let currUserID = req.session['user']['id'];
@@ -151,7 +161,7 @@ app.get('/urls', (req, res) => {
 app.get('/urls/new', (req, res) => {
 
   //require login
-  if (req.session.user) {
+  if (isLoggedIn(req)) {
 
 
     let templateVars = {
@@ -171,7 +181,7 @@ app.get('/urls/new', (req, res) => {
 app.get('/urls/:id', (req, res) => {
 
   //require login
-  if (req.session.user) {
+  if (isLoggedIn(req)) {
 
     //check if id belongs to them - do they have access to this url?/do their IDs match?
     const shortUrlKey = req.params.id
@@ -270,7 +280,7 @@ app.post("/urls/:id/delete", (req, res) => {
   let shortURL = req.params.id;
 
   //check if the url belongs to the current user - do their IDs match?
-  if(req.session['user']['id'] === urlDatabase[shortURL]['userID']){
+  if(matchedIds(req, shortURL)){
 
     //if url belongs to current user, remove from the database
     delete urlDatabase[shortURL];
@@ -287,7 +297,7 @@ app.post("/urls/:id", (req, res) => {
   let shortURL = req.params.id;
 
   //require correct login.... match to userID
-  if(req.session['user']['id'] === urlDatabase[shortURL]['userID']){
+  if(matchedIds(req, shortURL)){
 
     //idetify short url id, and the desired new paired long url
     let updatedLongURL = req.body['updatedLongURL'];
