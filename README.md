@@ -10,6 +10,10 @@ TinyApp is a fulls stack web application built with Node and Express that allows
 - body-parser
 - cookie-session
 
+## Final Product
+
+!['ScreenShot of Urls Page'](https://github.com/MapleMocha/tinyApp/blob/master/docs/urlsPage.png?raw=true)
+!['ScreenShot of Short Url edit Page'](https://github.com/MapleMocha/tinyApp/blob/master/docs/editPage.png?raw=true)
 
 ## Getting Started
 - Install all dependencies (using the 'npm install' command).
