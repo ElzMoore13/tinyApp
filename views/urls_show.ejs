@@ -6,7 +6,7 @@
 <body>
   <div class='container'>
     <h1 id='shortTitle'>Short URL: <%-shortURL%></h1>
-      <form method="POST" action='/urls/<%- shortURL %>'>
+      <form method="POST" action='/urls/<%- shortURL %>?_method=PUT'>
         <input class='textBar' type="text" name="updatedLongURL" placeholder="<%-longURL%>", style='width: 300px'>
         <input class='btn btn default' type="submit" value="Update">
       </form>
