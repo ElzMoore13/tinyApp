@@ -330,6 +330,11 @@ app.post("/login", (req, res) => {
       //if email and/or password had no match, render error page
       make404(res); //email and/or password were not found :(
     }
+  } else {
+
+      //if email and/or password had no match, render error page
+      make404(res); //email and/or password were not found :(
+
   }
 })
 
