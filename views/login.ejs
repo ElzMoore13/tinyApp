@@ -3,14 +3,17 @@
 <body>
   <title>TinyApp</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css" href="/partials/stylesheet.css" />
+
+<img id ='topLeftPic' src="/partials/duck.png" alt='rubber duck'>
 
   <form id="login" method="POST" action="/login">
-    <input type="email" name="email" placeholder="thisIsMyEmail@helloWorld.com">
-    <input type="password" name="password" placeholder="•••••••••">
-    <input type="submit" name="login">
+    <input class='textBar' type="email" name="email" placeholder="thisIsMyEmail@helloWorld.com">
+    <input class='textBar' type="password" name="password" placeholder="•••••••••">
+    <input class='btn btn-default' type="submit" name="login">
   </form>
 
-  <a href='/register'>Wanna Register?</a>
+  <a class='nav-bar' href='/register'>Wanna Register?</a>
 
 </body>
 </html>

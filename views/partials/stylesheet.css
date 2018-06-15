@@ -2,48 +2,41 @@ body {
   background-color: #0e54a0
 }
 
-.table {
-
-
-}
-
 .container {
   margin-top: 50px;
 }
 
-head {
-
-}
-
 .table-striped{
-  background-color: #c7d6e6;
+  background-color: #c7d6ef;
+  width: 100%;
+  border-radius: 20px;
 
 }
 
-.table{
-  border-radius:25px;
+
+#registerLink{
+  margin: 30px;
+  background-color: red;
 }
 
-#login, #logout {
-  background-color: #63a8ee;
-  align-items: center;
-  border-radius:25px;
-  padding: 10px;
-  margin: 10px;
-  margin-left: 180px;
+.textBar{
+  border-radius: 20px;
 }
 
-/*
-#userForm{
-  background-color: #c3d1df;
-  padding: 20px;
-  padding-top: 40px;
-  padding-bottom: 40px;
-  border-radius: 35px;
-  margin-top: 50px;
-}
-*/
 
+
+.form-group {
+  margin-top: 100px;
+}
+
+.nav-bar {
+  color: white;
+
+}
+
+.nav-bar:hover {
+  color: yellow;
+}
 
 .urlEdit{
   margin-left: 100px;
@@ -54,6 +47,16 @@ head {
 
 .btn {
   margin: 5px;
+}
+
+#login, #logout {
+  background-color: #63a8ee;
+  align-items: center;
+  border-radius:25px;
+  padding: 10px;
+  margin: 10px;
+  margin-left: 180px;
+  width: 75%;
 }
 
 #shortUrlTitle{
@@ -74,6 +77,11 @@ head {
   position: relative;
   top: 0;
   padding: 0px;
+}
+
+#shortTitle {
+  color: black;
+  font-size: 60px;
 }
 
 

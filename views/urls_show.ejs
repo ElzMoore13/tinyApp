@@ -5,10 +5,10 @@
 </head>
 <body>
   <div class='container'>
-    <h1>Short URL: <%-shortURL%></h1>
+    <h1 id='shortTitle'>Short URL: <%-shortURL%></h1>
       <form method="POST" action='/urls/<%- shortURL %>'>
-        <input type="text" name="updatedLongURL" placeholder="<%-longURL%>", style='width: 300px'>
-        <input type="submit" value="Update">
+        <input class='textBar' type="text" name="updatedLongURL" placeholder="<%-longURL%>", style='width: 300px'>
+        <input class='btn btn default' type="submit" value="Update">
       </form>
   </div>
 </body>
