@@ -350,39 +350,44 @@ app.post('/register', (req,res) => {
 
   //get requested email and password from registration request
   let email = req.body['email'];
-  let password = bcrypt.hashSync(req.body['password'], 10);
+  let password = req.body['password'];
+
 
   //check that both an email and a password were given
   if(!(email && password)){
     //if not, render and error
     make404(res);// , "need both a username and password!");
-  }
-
-  //check if email has already been used (is it already stored in users?)
-  let checkIfUnique = isNotUniqueEmail(email)
-
-  if (checkIfUnique) {
-
-    //if not unique, render an error
-    make404(res); //, "Email already registered!");
-
+  } else if(!(password.length > 7)){
+    //put restrictions on password, must be at least 8 chars
+    make404(res);
   } else {
+    //check if email has already been used (is it already stored in users?)
+    let checkIfUnique = isNotUniqueEmail(email)
 
-    //if both a unique email and a password are present, generate new random ID for user
-    let newID = generateRandomUserId();
+    if (checkIfUnique) {
 
-    //store user information in user database
-    users[newID] = {
-      'id': newID,
-      'email': email,
-      'password': password
+      //if not unique, render an error
+      make404(res); //, "Email already registered!");
+
+    } else {
+
+      //if both a unique email and a password are present, generate new random ID for user
+      let newID = generateRandomUserId();
+      let password = bcrypt.hashSync(req.body['password'], 10);
+
+      //store user information in user database
+      users[newID] = {
+        'id': newID,
+        'email': email,
+        'password': password
+      }
+
+      //store user information in session cookies
+      req.session.user = users[newID]
+
+      //redirect to their urls listing page
+      res.redirect('/urls');
     }
-
-    //store user information in session cookies
-    req.session.user = users[newID]
-
-    //redirect to their urls listing page
-    res.redirect('/urls');
   }
 
 })
