@@ -2,6 +2,9 @@
 
 <title>TinyApp</title>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<link rel="stylesheet" type="text/css" href="/partials/stylesheet.css" />
+
+<img id ='topLeftPic' src="/partials/duck.png" alt='rubber duck'>
 
 <% if (user === undefined) {%>
   <a href='/login'>Wanna Login?</a>
@@ -9,8 +12,10 @@
 <% } else { %>
   <form id='logout' method="POST" action='/logout'>
     <label for="logout"><%- user['email'] %></label>
-    <input type="submit" name="logout" value="logout">
+    <input class='btn btn-default' type="submit" name="logout" value="logout">
   </form>
+  <a class='btn btn-default nav-bar' href = '../urls/new'> Add URL </a>
+  <a class='btn btn-default nav-bar' href = '../urls'> Full Url List </a>
 <% } %>
 
 
