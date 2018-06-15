@@ -33,16 +33,18 @@ const urlDatabase = {
   }
 };
 
+    //I KNOW PASSWORDS SHOULDN'T BE STORED LIKE THIS BUT
+    //I WANTED SOME DEFAULT USERS IN HERE FOR TESTING :)
 const users ={
   "322w55ekh7g": {
     id: "322w55ekh7g",
     email: "user@example.com",
-    password: "purple-monkey-dinosaur"
+    password: bcrypt.hashSync("purple-monkey-dinosaur", 10)
   },
  "do1r53g7xat": {
     id: "do1r53g7xat",
     email: "user2@example.com",
-    password: "dishwasher-funk"
+    password: bcrypt.hashSync("dishwasher-funk", 10)
   }
 }
 
@@ -179,7 +181,7 @@ app.get('/urls/:id', (req, res) => {
       //if specified shruken url doesn't exist, redirect to available urls page
       res.redirect('/urls');
 
-    } else if(urlDatabase[shortUrlKey]['userID']){
+    } else if(urlDatabase[shortUrlKey]['userID'] === req.session['user']['id']){
 
       //if IDs, render page/allow access
       let templateVars = {
