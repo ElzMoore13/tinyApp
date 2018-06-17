@@ -88,12 +88,12 @@ const findUser = function(email, password) {
   let userId = keys.filter(key => users[key]['email'] === email).toString();
   //check if password matches password stored for that user
   if(!userId){
-    return null;
+    return false;
   } else if(bcrypt.compareSync(password, users[userId]['password'])){
     return users[userId];
   }
   else {
-    return null;
+    return false;
   }
 }
 
